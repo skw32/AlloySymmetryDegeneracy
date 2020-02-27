@@ -1,5 +1,5 @@
 ## Overview
-Workflow used to determine the symmetry degeneracy of alloy supercells with substitutions amongst transition metal sites. This information is used for computing configurational entropy. The project here is a specific case for the $Co_xMn_{3-x}O_4$ alloy with substitutions amongst Co and Mn sites which occupy octahedral (oh) and tetrahedral (td) crystallographic sites. Two datasets are processed, one where td sites are preferentially filled first (set A) and one where oh sites are preferentially filled first (set B).
+Workflow used to determine the symmetry degeneracy of alloy supercells with substitutions amongst transition metal sites. This information is used for computing configurational entropy. The project here is a specific case for the Co_xMn_{3-x}O_4 alloy with substitutions amongst Co and Mn sites which occupy octahedral (oh) and tetrahedral (td) crystallographic sites. Two datasets are processed, one where td sites are preferentially filled first (set A) and one where oh sites are preferentially filled first (set B).
 
 ## Dependencies
 

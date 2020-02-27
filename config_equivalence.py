@@ -21,10 +21,11 @@ def atom_nums_with_coords_flat(ase_cell):
         list: All atomic numbers and coordinates of input structure as list of str
     """
     atoms = ase_cell.get_atomic_numbers()
-    positions = ase_cell.get_positions()
+    positions = ase_cell.get_scaled_positions()
     list_of_strings = []
     for atom, pos in zip(atoms, positions):
-        atomAndCoords = str(atom)+str(pos[0])+str(pos[1])+str(pos[2])
+        # Coordinates are rounded to 3 d.p. to avoid numerical error when comparing to transformed structures
+        atomAndCoords = str(atom)+str(np.round(pos[0],3))+str(np.round(pos[1],3))+str(np.round(pos[2],3))
         list_of_strings.append(atomAndCoords) 
     return list_of_strings
 
@@ -52,6 +53,7 @@ def compare_cfgs_str(ase_cell, symm_cell):
         same_cfg = True
     else:
         same_cfg = False
+    #print(same_atom_count) #debug
     return same_cfg
 
 # Use function to get around issue with continuing out of two loops when applying symm ops to random structures

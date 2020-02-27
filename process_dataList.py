@@ -90,7 +90,7 @@ if __name__=='__main__':
     for loc in all_set_locs:
         cfg_inpt = loc.rstrip()
 
-        print(cfg_inpt)    
+        print('Analysing: '+cfg_inpt) #Debug    
         try:  
             ### Step 0: Read in orig config with ase (here it is an unrelaxed POSCAR from CASM that has been re-formatted to be readable by ase)
             orig_cfg = os.path.join(cfg_inpt, 'POSCAR_orig')
@@ -147,15 +147,15 @@ if __name__=='__main__':
                 # Set attempts to be scaling*combination space (latter based on Co_td and Co_oh counts)
                 # Intention of scaling is to increase likelihood that each possible substitution is sampled
                 combinations = mt.calc_combs(Co_td, Co_oh)
-                #attempts = int(combinations*scaling)
-                attempts = 20 # reduce just for test phase
+                attempts = int(combinations*scaling)
+                #attempts = 10 # reduce just for test phase
                 #orig_atom_list = ce.atom_nums_with_coords_pdSorted(ase_cell) # Use when testing method with coord sorting
                 # Timing comparison of configs run in parallel
-                t0 = time.time()
+                #t0 = time.time()
                 for i in range(attempts):
                     pool.apply_async(create_and_check_rand_async, args=(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig_coords, symm_ops, symm_op_count, ase_cell_orig), callback=collect_result)
-                print('We compared '+str(attempts)+' configs')
-                print('It took {0} secs to compare cfgs'.format((time.time()-t0)))
+                #print('We compared '+str(attempts)+' configs')
+                #print('It took {0} secs to compare cfgs'.format((time.time()-t0)))
                 
                 # Collect together results from all processors
                 degeneracy_frac = float(sum(mp_results))/float(scaling) # Divide by scaling of combination space
