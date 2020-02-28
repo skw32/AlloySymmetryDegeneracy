@@ -90,8 +90,8 @@ if __name__=='__main__':
     for loc in all_set_locs:
         cfg_inpt = loc.rstrip()
 
-        print('Analysing: '+cfg_inpt) #Debug    
         try:  
+            print('Analysing: '+cfg_inpt) 
             ### Step 0: Read in orig config with ase (here it is an unrelaxed POSCAR from CASM that has been re-formatted to be readable by ase)
             orig_cfg = os.path.join(cfg_inpt, 'POSCAR_orig')
             ase_cell_orig = ase.io.read(orig_cfg, format='vasp')
