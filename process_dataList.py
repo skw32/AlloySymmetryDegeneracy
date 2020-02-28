@@ -38,11 +38,10 @@ def create_and_check_rand_async(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig
     Returns:
         int: 0 if no matches are found 1 if any matches are found
     """
-    degeneracy_count = 1*scaling # All cfgs have at least one symmetry degeracy (itself!)
+    degeneracy_count = 1*scaling # All configs have at least one symm degeneracy (self)
     # Randomly shuffle lists of td and oh atoms
     td_shuf = np.random.choice(td_atoms, size=td_atoms.shape)
     oh_shuf = np.random.choice(oh_atoms, size=oh_atoms.shape)
-    # Check that randomly shuffled lists are not the same as the orig config
     while (td_atoms == td_shuf and oh_atoms == oh_shuf):
         td_shuf = np.random.choice(td_atoms, size=td_atoms.shape)
         oh_shuf = np.random.choice(oh_atoms, size=oh_atoms.shape)
@@ -115,25 +114,25 @@ if __name__=='__main__':
             # Assigning count of Co_td and Co_oh based on if structure is set A or set B
             Co_count = ase_cell_orig.get_chemical_symbols().count('Co')
             # First check that config is not an end-member of the alloy
-            if Co_count == 0 or Co_count == 24:
+            if (Co_count == 0 or Co_count == 24):
                 all_degen_counts.append(1)
                 print('Symmetry degeneracy of alloy end-member is just 1.')
                 continue # Move on to next config in data list, don't waste time with the rest of the analysis!
             else:
-                if struc_type == 'A':
-                    if Co_count <= 8:
+                if (struc_type == 'A'):
+                    if (Co_count <= 8):
                         Co_td = Co_count
                         Co_oh = 0
-                    elif Co_count > 8:
+                    elif (Co_count > 8):
                         Co_td = 8
                         Co_oh = Co_count - 8
                     else:
                         print('Error in checking Co_count')
-                elif struc_type == 'B':
-                    if Co_count <= 16:
+                elif (struc_type == 'B'):
+                    if (Co_count <= 16):
                         Co_oh = Co_count
                         Co_td = 0
-                    elif Co_count > 16:
+                    elif (Co_count > 16):
                         Co_oh = 16
                         Co_td = Co_count - 16
                     else:
@@ -151,13 +150,13 @@ if __name__=='__main__':
                 # Set attempts to be scaling*combination space (latter based on Co_td and Co_oh counts)
                 # Intention of scaling is to increase likelihood that each possible substitution is sampled
                 combinations = mt.calc_combs(Co_td, Co_oh)
-                #attempts = int((combinations-1)*scaling) # subtract 1 from combinations to discount original arrangement
-                attempts = 10 # reduce just for test phase
+                attempts = int((combinations-1)*scaling) # subtract 1 from combinations to discount arrangement for same as orig config in total
+                #attempts = 10 # reduce just for test phase
                 #orig_atom_list = ce.atom_nums_with_coords_pdSorted(ase_cell) # Use when testing method with coord sorting
                 # Timing comparison of configs run in parallel
                 #t0 = time.time()
                 for i in range(attempts):
-                    pool.apply_async(create_and_check_rand_async, args=(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig_coords, symm_ops, symm_op_count, ase_cell_orig, scaling), callback=collect_result)
+                    pool.apply_async(create_and_check_rand_async, args=(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig_coords, symm_ops, symm_op_count, ase_cell_orig), callback=collect_result)
                 #print('We compared '+str(attempts)+' configs')
                 #print('It took {0} secs to compare cfgs'.format((time.time()-t0)))
                 
