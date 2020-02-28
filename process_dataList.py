@@ -42,6 +42,7 @@ def create_and_check_rand_async(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig
     # Randomly shuffle lists of td and oh atoms
     td_shuf = np.random.choice(td_atoms, size=td_atoms.shape)
     oh_shuf = np.random.choice(oh_atoms, size=oh_atoms.shape)
+    # Continue shuffling atoms if the arrangement is the same as the original config
     while (td_atoms == td_shuf and oh_atoms == oh_shuf):
         td_shuf = np.random.choice(td_atoms, size=td_atoms.shape)
         oh_shuf = np.random.choice(oh_atoms, size=oh_atoms.shape)
