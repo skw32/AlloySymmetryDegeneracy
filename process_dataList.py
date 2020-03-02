@@ -17,7 +17,7 @@ import config_equivalence as ce
 import misc_tools as mt
 
 
-def create_and_check_rand_async(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig_coords, symm_ops, symm_op_count, ase_cell_orig, scaling):
+def create_and_check_rand_async(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig_coords, symm_ops, symm_op_count, ase_cell_orig):
     """Workflow made into a function for compatibility with 'pool.apply_async'.
     Actions of workflow:
     - Creates random shuffles amongst lists of td and oh atoms in (i.e. substitutions in the alloy)
@@ -38,12 +38,14 @@ def create_and_check_rand_async(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig
     Returns:
         int: 0 if no matches are found 1 if any matches are found
     """
-    degeneracy_count = 1*scaling # All configs have at least one symm degeneracy (self)
+    degeneracy_count = 0
     # Randomly shuffle lists of td and oh atoms
     td_shuf = np.random.choice(td_atoms, size=td_atoms.shape)
     oh_shuf = np.random.choice(oh_atoms, size=oh_atoms.shape)
-    # Continue shuffling atoms if the arrangement is the same as the original config
-    while (td_atoms == td_shuf and oh_atoms == oh_shuf):
+    #if (td_atoms.tolist() == td_shuf.tolist()) and (oh_atoms.tolist() == oh_shuf.tolist()):
+    #    print('Same!')
+    # Keep re-shuffling if random config is the same as the initial
+    while ((td_atoms.tolist() == td_shuf.tolist()) and (oh_atoms.tolist() == oh_shuf.tolist())):
         td_shuf = np.random.choice(td_atoms, size=td_atoms.shape)
         oh_shuf = np.random.choice(oh_atoms, size=oh_atoms.shape)
     all_atoms_shuf = np.concatenate((td_shuf, oh_shuf, ox_atoms), axis=0)
@@ -54,6 +56,7 @@ def create_and_check_rand_async(i, td_atoms, oh_atoms, ox_atoms, orig_cell, orig
     if isEquiv:
         degeneracy_count += 1
     return degeneracy_count
+
 def collect_result(result):
     """Collecting results from async parallel processors
 
@@ -151,7 +154,7 @@ if __name__=='__main__':
                 # Set attempts to be scaling*combination space (latter based on Co_td and Co_oh counts)
                 # Intention of scaling is to increase likelihood that each possible substitution is sampled
                 combinations = mt.calc_combs(Co_td, Co_oh)
-                attempts = int((combinations-1)*scaling) # subtract 1 from combinations to discount arrangement for same as orig config in total
+                attempts = int((combinations-1)*scaling) # Subtract from from total combinations to discount same arrangement of atoms as in orig config
                 #attempts = 10 # reduce just for test phase
                 #orig_atom_list = ce.atom_nums_with_coords_pdSorted(ase_cell) # Use when testing method with coord sorting
                 # Timing comparison of configs run in parallel
@@ -162,7 +165,7 @@ if __name__=='__main__':
                 #print('It took {0} secs to compare cfgs'.format((time.time()-t0)))
                 
                 # Collect together results from all processors
-                degeneracy_frac = float(sum(mp_results))/float(scaling) # Divide by scaling of combination space
+                degeneracy_frac = float(sum(mp_results))/float(scaling) +1 # Divide by scaling of total combinations to average out excess, add 1 because all configs have symm degen of self
         except:
             print('Error in processing config from: '+str(cfg_inpt))
         else: # If no errors in code above, add data to final degeneracy fractions list
