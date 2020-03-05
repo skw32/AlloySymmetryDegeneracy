@@ -25,7 +25,8 @@ def atom_nums_with_coords_flat(ase_cell):
     list_of_strings = []
     for atom, pos in zip(atoms, positions):
         # Coordinates are rounded to 3 d.p. to avoid numerical error when comparing to transformed structures
-        atomAndCoords = str(atom)+str(np.round(pos[0],3))+str(np.round(pos[1],3))+str(np.round(pos[2],3))
+        # minus signs are removed to avoid discrepency between -0.0 and 0.0
+        atomAndCoords = (str(atom)+str(np.round(pos[0],3))+str(np.round(pos[1],3))+str(np.round(pos[2],3))).replace('-','')
         list_of_strings.append(atomAndCoords) 
     return list_of_strings
 
